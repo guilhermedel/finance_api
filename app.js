@@ -10,7 +10,7 @@ import cartaoRoutes from './routes/cartao.js';
 import compraRoutes from './routes/compra.js';
 
 // Conectar ao MongoDB
-connectDB();
+await connectDB();
 
 // Inicializar o aplicativo Express
 const app = express();
