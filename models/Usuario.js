@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 const UsuarioSchema = new mongoose.Schema({
-  nome: { type: String, required: true },
-  idade: { type: Number },
-  dataNascimento: { type: Date },
-  genero: { type: String },
+  name: { type: String, required: true },
+  age: { type: Number,required:true },
+  birthdayDate: { type: Date,required:true },
+  gender: { type: String,enum: ['M', 'F'],required:true },
   email: { type: String, required: true, unique: true },
-  senha: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
 const Usuario = mongoose.model('Usuario', UsuarioSchema);

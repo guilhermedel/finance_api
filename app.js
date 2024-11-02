@@ -10,6 +10,7 @@ import receitaRoutes from "./routes/receita.js";
 import cartaoRoutes from "./routes/cartao.js";
 import compraRoutes from "./routes/compra.js";
 
+
 // Conectar ao MongoDB
 await connectDB();
 
@@ -19,6 +20,7 @@ const app = express();
 // Middleware para analisar JSON no corpo das requisições
 app.use(bodyParser.json());
 
+const CSS_URL = " https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css ";
 // Usar as rotas
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/categorias", categoriaRoutes);
@@ -26,7 +28,7 @@ app.use("/api/receitas", receitaRoutes);
 
 app.use("/api/cartoes", cartaoRoutes);
 app.use("/api/compras", compraRoutes);
-app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec,{customCssUrl:CSS_URL}));
 
 // Definir a porta e iniciar o servidor
 const PORT = process.env.PORT || 5000;

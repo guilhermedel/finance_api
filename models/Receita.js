@@ -4,6 +4,7 @@ const ReceitaSchema = new mongoose.Schema({
   valor: { type: Number, required: true },
   tipo: { type: String, enum: ['entrada', 'saida'], required: true },
   origemDestino: { type: String },
+  date: { type: Date, required: true },
   usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
   categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
 });
