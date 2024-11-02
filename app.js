@@ -20,7 +20,7 @@ const app = express();
 // Middleware para analisar JSON no corpo das requisições
 app.use(bodyParser.json());
 
-const CSS_URL = " https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css ";
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.css";
 // Usar as rotas
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/categorias", categoriaRoutes);
