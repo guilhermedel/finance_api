@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import connectDB from "./config/database.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
+import cors from "cors";
 // Importar as rotas
 import usuarioRoutes from "./routes/usuario.js";
 import categoriaRoutes from "./routes/categoria.js";
@@ -19,6 +20,11 @@ const app = express();
 
 // Middleware para analisar JSON no corpo das requisições
 app.use(bodyParser.json());
+
+// Middleware para habilitar CORS
+app.use(cors({
+  origin: '*'
+}));
 
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.css";
 // Usar as rotas
