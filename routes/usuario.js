@@ -220,6 +220,15 @@ router.post("/login", async (req, res) => {
  *               name:
  *                 type: string
  *                 example: "Maria Oliveira"
+ *               gender:
+ *                 type: string
+ *                 example: "F"
+ *               age:
+ *                 type: number
+ *                 example: 25
+ *               dateBirthday:
+ *                 type: string
+ *                 example: "05/11/2024"
  *     responses:
  *       201:
  *         description: Usuário registrado com sucesso
