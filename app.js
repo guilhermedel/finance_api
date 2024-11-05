@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 // Middleware para habilitar CORS
 app.use(cors({
-  origin: ['http://192.168.1.105:3000'
+  origin: ['http://192.168.1.105:3000','http://192.168.1.1:3000','http://localhost:3000'
     ,'https://money-gest.vercel.app'],
 }));
 
