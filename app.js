@@ -23,7 +23,8 @@ app.use(bodyParser.json());
 
 // Middleware para habilitar CORS
 app.use(cors({
-  origin: ['http://192.168.1.103:3000','https://money-gest.vercel.app'],
+  origin: ['http://192.168.1.105:3000'
+    ,'https://money-gest.vercel.app'],
 }));
 
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.css";
