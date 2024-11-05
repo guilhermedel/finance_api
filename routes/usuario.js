@@ -27,8 +27,8 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *       type: object
  *       required:
  *         - email
- *         - senha
- *         - nome
+ *         - password
+ *         - name
  *       properties:
  *         id:
  *           type: string
@@ -38,18 +38,18 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *           format: email
  *           description: Email do usuário
  *           example: "usuario@example.com"
- *         senha:
+ *         password:
  *           type: string
- *           description: Senha do usuário (criptografada)
- *         nome:
+ *           description: password do usuário (criptografada)
+ *         name:
  *           type: string
- *           description: Nome do usuário
+ *           description: name do usuário
  *           example: "João da Silva"
  *       example:
  *         id: "60d0fe4f5311236168a109ca"
  *         email: "usuario@example.com"
- *         senha: "$2a$10$EixZaYVK1fsbw1ZfbX3OXe.PX5W6M6uQ3mGq9bZ6e1zYxF5jZxJ5e"
- *         nome: "João da Silva"
+ *         password: "$2a$10$EixZaYVK1fsbw1ZfbX3OXe.PX5W6M6uQ3mGq9bZ6e1zYxF5jZxJ5e"
+ *         name: "João da Silva"
  *     AuthResponse:
  *       type: object
  *       properties:
@@ -71,7 +71,7 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *               type: string
  *               format: email
  *               example: "usuario@example.com"
- *             nome:
+ *             name:
  *               type: string
  *               example: "João da Silva"
  *     RegistroResponse:
@@ -95,7 +95,7 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *               type: string
  *               format: email
  *               example: "novo@usuario.com"
- *             nome:
+ *             name:
  *               type: string
  *               example: "Maria Oliveira"
  *     Error:
@@ -125,15 +125,15 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *             type: object
  *             required:
  *               - email
- *               - senha
+ *               - password
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
  *                 example: "usuario@example.com"
- *               senha:
+ *               password:
  *                 type: string
- *                 example: "senha123"
+ *                 example: "password123"
  *     responses:
  *       200:
  *         description: Login realizado com sucesso
@@ -142,7 +142,7 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  *       401:
- *         description: Email ou senha inválidos
+ *         description: Email ou password inválidos
  *         content:
  *           application/json:
  *             schema:
@@ -150,7 +150,7 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Email ou senha inválidos"
+ *                   example: "Email ou password inválidos"
  *       500:
  *         description: Erro no servidor
  *         content:
@@ -161,16 +161,16 @@ const SECRET_KEY = "sua_chave_secreta_jwt"; // Em produção, use variáveis de 
 // Login de usuário
 router.post("/login", async (req, res) => {
   try {
-    const { email, senha } = req.body;
+    const { email, password } = req.body;
     const usuario = await Usuario.findOne({ email });
 
     if (!usuario) {
-      return res.status(401).json({ message: "Email ou senha inválidos" });
+      return res.status(401).json({ message: "Email ou password inválidos" });
     }
 
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaValida) {
-      return res.status(401).json({ message: "Email ou senha inválidos" });
+    const passwordValida = await bcrypt.compare(password, usuario.password);
+    if (!passwordValida) {
+      return res.status(401).json({ message: "Email ou password inválidos" });
     }
 
     const token = jwt.sign(
@@ -185,7 +185,7 @@ router.post("/login", async (req, res) => {
         token: token,
         id: usuario._id,
         email: usuario.email,
-        nome: usuario.nome,
+        name: usuario.name,
       },
     });
   } catch (err) {
@@ -207,17 +207,17 @@ router.post("/login", async (req, res) => {
  *             type: object
  *             required:
  *               - email
- *               - senha
- *               - nome
+ *               - password
+ *               - name
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
  *                 example: "novo@usuario.com"
- *               senha:
+ *               password:
  *                 type: string
- *                 example: "senha123"
- *               nome:
+ *                 example: "password123"
+ *               name:
  *                 type: string
  *                 example: "Maria Oliveira"
  *     responses:
@@ -247,7 +247,7 @@ router.post("/login", async (req, res) => {
 // Criar um novo usuário (Registro)
 router.post("/registro", async (req, res) => {
   try {
-    const { email, senha, nome } = req.body;
+    const { email, password, name, age, birthdayDate, gender } = req.body;
 
     // Verificar se o usuário já existe
     const usuarioExistente = await Usuario.findOne({ email });
@@ -255,14 +255,18 @@ router.post("/registro", async (req, res) => {
       return res.status(400).json({ message: "Email já cadastrado" });
     }
 
-    // Criptografar a senha
+    // Criptografar a password
     const salt = await bcrypt.genSalt(10);
-    const senhaCriptografada = await bcrypt.hash(senha, salt);
+    const passwordCriptografada = await bcrypt.hash(password, salt);
 
     const novoUsuario = new Usuario({
       email,
-      senha: senhaCriptografada,
-      nome,
+      password: passwordCriptografada,
+      name,
+      age,
+      birthdayDate,
+      gender
+
     });
 
     await novoUsuario.save();
@@ -276,10 +280,7 @@ router.post("/registro", async (req, res) => {
     res.status(201).json({
       message: "Usuário registrado com sucesso",
       response: {
-        token: token,
-        id: novoUsuario._id,
-        email: novoUsuario.email,
-        nome: novoUsuario.nome,
+        token: token
       },
     });
   } catch (err) {
@@ -342,7 +343,7 @@ router.post("/registro", async (req, res) => {
 // Obter todos os usuários
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Usuario.find().select("-senha");
+    const usuarios = await Usuario.find().select("-password");
     res.json({
       message: "Usuários encontrados com sucesso",
       response: usuarios,
@@ -420,7 +421,7 @@ router.get("/", async (req, res) => {
 // Obter um usuário por ID
 router.get("/:id", async (req, res) => {
   try {
-    const usuario = await Usuario.findById(req.params.id).select("-senha");
+    const usuario = await Usuario.findById(req.params.id).select("-password");
     if (!usuario) {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
@@ -459,10 +460,10 @@ router.get("/:id", async (req, res) => {
  *                 type: string
  *                 format: email
  *                 example: "atualizado@usuario.com"
- *               senha:
+ *               password:
  *                 type: string
- *                 example: "novaSenha123"
- *               nome:
+ *                 example: "novapassword123"
+ *               name:
  *                 type: string
  *                 example: "Maria Atualizada"
  *     responses:
@@ -518,16 +519,16 @@ router.get("/:id", async (req, res) => {
 // Atualizar um usuário por ID
 router.put("/:id", async (req, res) => {
   try {
-    if (req.body.senha) {
+    if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
-      req.body.senha = await bcrypt.hash(req.body.senha, salt);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
     }
 
     const usuarioAtualizado = await Usuario.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true },
-    ).select("-senha");
+    ).select("-password");
 
     if (!usuarioAtualizado) {
       return res.status(404).json({ message: "Usuário não encontrado" });
