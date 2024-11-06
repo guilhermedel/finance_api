@@ -256,7 +256,7 @@ router.post("/login", async (req, res) => {
 // Criar um novo usuário (Registro)
 router.post("/registro", async (req, res) => {
   try {
-    const { email, password, name, age, birthdayDate, gender,confirmPassword } = req.body;
+    const { email, password, name, age, dateBirthday, gender,confirmPassword } = req.body;
 
     // Verificar se o usuário já existe
     const usuarioExistente = await Usuario.findOne({ email });
