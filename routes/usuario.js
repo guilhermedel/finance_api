@@ -276,7 +276,7 @@ router.post("/registro", async (req, res) => {
       password: passwordCriptografada,
       name,
       age,
-      birthdayDate,
+      dateBirthday,
       gender
 
     });
