@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import connectDB from "./config/database.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
+import cors from 'cors';
 // Importar as rotas
 import usuarioRoutes from "./routes/usuario.js";
 import categoriaRoutes from "./routes/categoria.js";
@@ -17,6 +18,13 @@ await connectDB();
 // Inicializar o aplicativo Express
 const app = express();
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  app.use(cors());
+  next();
+});
 // Middleware para analisar JSON no corpo das requisições
 app.use(bodyParser.json());
 
