@@ -256,7 +256,7 @@ router.post("/login", async (req, res) => {
 // Criar um novo usuário (Registro)
 router.post("/registro", async (req, res) => {
   try {
-    const { email, password, name, age, birthdayDate, gender } = req.body;
+    const { email, password, name, age, birthdayDate, gender,confirmPassword } = req.body;
 
     // Verificar se o usuário já existe
     const usuarioExistente = await Usuario.findOne({ email });
@@ -265,6 +265,9 @@ router.post("/registro", async (req, res) => {
     }
 
     // Criptografar a password
+    if(password !== confirmPassword){
+      return res.status(400).json({ message: "As senhas nao conferem" });
+    }
     const salt = await bcrypt.genSalt(10);
     const passwordCriptografada = await bcrypt.hash(password, salt);
 
