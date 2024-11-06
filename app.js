@@ -20,9 +20,6 @@ const app = express();
 // Middleware para analisar JSON no corpo das requisições
 app.use(bodyParser.json());
 
-// Middleware para habilitar CORS
-app.use();
-
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.css";
 // Usar as rotas
 app.use("/api/usuarios", usuarioRoutes);
