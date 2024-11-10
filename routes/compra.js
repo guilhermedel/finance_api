@@ -2,6 +2,8 @@
 import express from "express";
 import Compra from "../models/Compra.js";
 import ContaBancaria from "../models/ContaBancaria.js";
+import Cartao from "../models/Cartao.js";
+import Categoria from "../models/Categoria.js";
 
 const router = express.Router();
 
