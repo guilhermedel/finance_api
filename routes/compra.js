@@ -83,6 +83,9 @@ const router = express.Router();
  */
 // Criar uma nova compra
 router.post("/", async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     const {
       store,
@@ -92,47 +95,61 @@ router.post("/", async (req, res) => {
       userId,
       accountBankingNames,
       paymentMethod,
+      date
     } = req.body;
-    
 
     // 1. Buscar o Cartão pelo número
-    const cartao = await Cartao.findOne({ number: cardNumber });
+    const cartao = await Cartao.findOne({ number: cardNumber }).session(session);
     if (!cartao) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ error: 'Cartão não encontrado com o número fornecido.' });
     }
 
     // 2. Buscar a Categoria pelo nome
-    const categoria = await Categoria.findOne({ name: categoryName });
+    const categoria = await Categoria.findOne({ name: categoryName }).session(session);
     if (!categoria) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
     }
 
-    // 3. Buscar o Usuário pela conta (número)
-    const conta = await ContaBancaria.findOne({ accountBankingName: accountBankingNames });
+    // 3. Buscar a Conta Bancária pelo nome
+    const conta = await ContaBancaria.findOne({ accountBankingName: accountBankingNames }).session(session);
     if (!conta) {
-      return res.status(404).json({ error: 'Conta não encontrada.' });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ error: 'Conta bancária não encontrada.' });
     }
 
-    // 4. Criar a nova compra com os IDs encontrados
-    const novaCompra = {
+    // 4. Verificar se há saldo suficiente
+    if (conta.accountBalance < value) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ error: 'Saldo insuficiente na conta bancária.' });
+    }
+
+    // 5. Diminuir o saldo da conta bancária
+    conta.accountBalance -= value;
+    await conta.save({ session });
+
+    // 6. Criar a nova compra com os IDs encontrados
+    const novaCompra = new Compra({
       store,
       value,
-      date: new Date(date), // Se o campo date for Date
+      date: date ? new Date(date) : new Date(),
       paymentMethod,
       cardId: cartao._id,
       categoryId: categoria._id,
       userId: userId,
       accountId: conta._id
       // Outros campos adicionais
-    };
+    });
 
-    // 5. Salvar a compra no banco de dados
-    await novaCompra.save();
-
-    // 6. Retornar a resposta com a compra criada
+    // 7. Salvar a compra no banco de dados
+    await novaCompra.save({ session });
     res.status(201).json(novaCompra);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });

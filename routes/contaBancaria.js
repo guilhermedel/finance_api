@@ -160,7 +160,7 @@ router.get("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const {userId} = req.params
-    const ContaBancaria = await ContaBancaria.findOne({userId: userId}).populate("card");
+    const ContaBancaria = await ContaBancaria.findOne({userId: userId});
     if (!ContaBancaria) {
       return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }
