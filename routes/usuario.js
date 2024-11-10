@@ -223,9 +223,6 @@ router.post("/login", async (req, res) => {
  *               gender:
  *                 type: string
  *                 example: "F"
- *               age:
- *                 type: number
- *                 example: 25
  *               dateBirthday:
  *                 type: string
  *                 example: "05/11/2024"
@@ -256,7 +253,7 @@ router.post("/login", async (req, res) => {
 // Criar um novo usuário (Registro)
 router.post("/registro", async (req, res) => {
   try {
-    const { email, password, name, age, dateBirthday, gender,confirmPassword } = req.body;
+    const { email, password, name, dateBirthday, gender,confirmPassword } = req.body;
 
     // Verificar se o usuário já existe
     const usuarioExistente = await Usuario.findOne({ email });
@@ -275,7 +272,6 @@ router.post("/registro", async (req, res) => {
       email,
       password: passwordCriptografada,
       name,
-      age,
       dateBirthday,
       gender
 
