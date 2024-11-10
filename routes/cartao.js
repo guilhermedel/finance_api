@@ -20,7 +20,7 @@ const router = express.Router();
  *       required:
  *         - number
  *         - validity
- *         - user
+ *         - userId
  *       properties:
  *         id:
  *           type: string
@@ -34,7 +34,7 @@ const router = express.Router();
  *           format: date
  *           description: Data de validity do cartão
  *           example: "2025-12-31"
- *         user:
+ *         userId:
  *           type: string
  *           description: ID do usuário associado
  *           example: "60d0fe4f5311236168a109ca"
@@ -42,7 +42,7 @@ const router = express.Router();
  *         id: "60d0fe4f5311236168a109cb"
  *         number: "1234-5678-9012-3456"
  *         validity: "2025-12-31"
- *         user: "60d0fe4f5311236168a109ca"
+ *         userId: "60d0fe4f5311236168a109ca"
  *     Error:
  *       type: object
  *       properties:
@@ -118,7 +118,7 @@ router.post("/", async (req, res) => {
 // Obter todos os cartões
 router.get("/", async (req, res) => {
   try {
-    const cartoes = await Cartao.find().populate("user");
+    const cartoes = await Cartao.find().populate("userId");
     res.json(cartoes);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -161,7 +161,7 @@ router.get("/", async (req, res) => {
 // Obter um cartão por ID
 router.get("/:id", async (req, res) => {
   try {
-    const cartao = await Cartao.findById(req.params.id).populate("user");
+    const cartao = await Cartao.findById(req.params.id).populate("userId");
     if (!cartao) {
       return res.status(404).json({ message: "Cartão não encontrado" });
     }

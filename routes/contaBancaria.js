@@ -87,7 +87,7 @@ router.post("/", async (req, res) => {
     await novaContaBancaria.save();
     res.status(201).json(novaContaBancaria);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
 // Obter todas as contas
 router.get("/", async (req, res) => {
   try {
-    const contas = await ContaBancaria.find().populate("user");
+    const contas = await ContaBancaria.find().populate("userId");
     res.json(contas);
   } catch (err) {
     res.status(500).json({ error: err.message });

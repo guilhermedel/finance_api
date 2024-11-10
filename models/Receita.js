@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 const ReceitaSchema = new mongoose.Schema({
-  valor: { type: Number, required: true },
-  tipo: { type: String, enum: ['entrada', 'saida'], required: true },
-  origemDestino: { type: String },
+  value: { type: Number, required: true },
+  type: { type: String, enum: ['entrada', 'saida'], required: true },
+  origins: { type: String },
   date: { type: Date, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
-  categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
+  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
 });
 
 const Receita = mongoose.model('Receita', ReceitaSchema);

@@ -1,6 +1,7 @@
 // routes/receitas.js
 import express from "express";
 import Receita from "../models/Receita.js";
+import Categoria from '../models/Categoria.js'
 
 const router = express.Router();
 
@@ -18,31 +19,31 @@ const router = express.Router();
  *     Receita:
  *       type: object
  *       required:
- *         - usuario
- *         - categoria
+ *         - userId
+ *         - categoryId
  *         - descricao
- *         - valor
+ *         - value
  *         - data
  *       properties:
  *         id:
  *           type: string
  *           description: ID único da receita
- *         usuario:
+ *         userId:
  *           type: string
  *           description: ID do usuário associado
  *           example: "60d0fe4f5311236168a109ca"
- *         categoria:
+ *         categoryId:
  *           type: string
- *           description: ID da categoria da receita
+ *           description: ID da categoryId da receita
  *           example: "60d0fe4f5311236168a109cb"
  *         descricao:
  *           type: string
  *           description: Descrição da receita
  *           example: "Salário"
- *         valor:
+ *         value:
  *           type: number
  *           format: float
- *           description: Valor da receita
+ *           description: value da receita
  *           example: 3000.00
  *         data:
  *           type: string
@@ -51,10 +52,10 @@ const router = express.Router();
  *           example: "2024-04-27T14:30:00Z"
  *       example:
  *         id: "60d0fe4f5311236168a109cf"
- *         usuario: "60d0fe4f5311236168a109ca"
- *         categoria: "60d0fe4f5311236168a109cb"
+ *         userId: "60d0fe4f5311236168a109ca"
+ *         categoryId: "60d0fe4f5311236168a109cb"
  *         descricao: "Salário"
- *         valor: 3000.00
+ *         value: 3000.00
  *         data: "2024-04-27T14:30:00Z"
  *     Error:
  *       type: object
@@ -127,7 +128,7 @@ router.post("/", async (req, res) => {
 // Obter todas as receitas
 router.get("/", async (req, res) => {
   try {
-    const receitas = await Receita.find().populate("usuario categoria");
+    const receitas = await Receita.find().populate("userId categoryId");
     res.json(receitas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -171,7 +172,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const receita = await Receita.findById(req.params.id).populate(
-      "usuario categoria",
+      "userId categoryId",
     );
     if (!receita) {
       return res.status(404).json({ message: "Receita não encontrada" });
@@ -181,6 +182,43 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get("/:categoryName", async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+
+    // Buscar todas as receitas com o categoryId fornecido
+    const categoria = await Categoria.findOne({ name: categoryName });
+    if (!categoria) {
+      return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
+    }
+    const receitas = await Receita.find({ categoryId: categoria._id }).populate("userId categoryId");
+
+    if (!receitas || receitas.length === 0) {
+      return res.status(404).json({ message: "Nenhuma receita encontrada para esta categoria." });
+    }
+
+    // Calcular o total com base no type
+    let total = 0;
+    receitas.forEach(receita => {
+      if (receita.type === 'entrada') {
+        total += receita.value;
+      } else if (receita.type === 'saida') {
+        total -= receita.value;
+      }
+    });
+
+    res.json({
+      categoryId,
+      total,
+      receitas
+    });
+  } catch (err) {
+    console.error('Erro ao buscar receitas:', err);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+});
+
 
 /**
  * @swagger

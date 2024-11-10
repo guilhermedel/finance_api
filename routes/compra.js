@@ -83,11 +83,56 @@ const router = express.Router();
 // Criar uma nova compra
 router.post("/", async (req, res) => {
   try {
-    const novaCompra = new Compra(req.body);
+    const {
+      store,
+      value,
+      cardNumber,
+      categoryName,
+      userId,
+      accountNumber,
+      paymentMethod,
+    } = req.body;
+    
+
+    // 1. Buscar o Cartão pelo número
+    const cartao = await Cartao.findOne({ number: cardNumber });
+    if (!cartao) {
+      return res.status(404).json({ error: 'Cartão não encontrado com o número fornecido.' });
+    }
+
+    // 2. Buscar a Categoria pelo nome
+    const categoria = await Categoria.findOne({ name: categoryName });
+    if (!categoria) {
+      return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
+    }
+
+    // 3. Buscar o Usuário pela conta (número)
+    const usuario = await Usuario.findOne({ number: accountNumber });
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuário não encontrado com o número de conta fornecido.' });
+    }
+
+    // 4. Criar a nova compra com os IDs encontrados
+    const novaCompra = {
+      store,
+      value,
+      date: new Date(date), // Se o campo date for Date
+      paymentMethod,
+      cardId: cartao._id,
+      categoryId: categoria._id,
+      userId: usuario._id,
+      accountId: conta._id
+      // Outros campos adicionais
+    };
+
+    // 5. Salvar a compra no banco de dados
     await novaCompra.save();
+
+    // 6. Retornar a resposta com a compra criada
     res.status(201).json(novaCompra);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
@@ -116,7 +161,7 @@ router.post("/", async (req, res) => {
 // Obter todas as compras
 router.get("/", async (req, res) => {
   try {
-    const compras = await Compra.find().populate("card");
+    const compras = await Compra.find().populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     res.json(compras);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -159,7 +204,7 @@ router.get("/", async (req, res) => {
 // Obter uma compra por ID
 router.get("/:id", async (req, res) => {
   try {
-    const compra = await Compra.findById(req.params.id).populate("card");
+    const compra = await Compra.findById(req.params.id).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     if (!compra) {
       return res.status(404).json({ message: "Compra não encontrada" });
     }
