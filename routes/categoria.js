@@ -105,9 +105,47 @@ router.post("/", async (req, res) => {
 // Obter todas as categorias
 router.get("/", async (req, res) => {
   try {
-    const categorias = await Categoria.find();
-    res.json(categorias);
+    const categoriasComRevenue = await Categoria.aggregate([
+      {
+        // Realiza um lookup para trazer as receitas associadas a cada categoria
+        $lookup: {
+          from: "receitas", // Nome da coleção de receitas no MongoDB
+          localField: "_id",
+          foreignField: "categoryId",
+          as: "receitas"
+        }
+      },
+      {
+        // Adiciona o campo revenueValue calculando a soma e subtração dos valores
+        $addFields: {
+          revenueValue: {
+            $sum: {
+              $map: {
+                input: "$receitas",
+                as: "receita",
+                in: {
+                  $cond: [
+                    { $eq: ["$$receita.type", "entrada"] },
+                    "$$receita.value",
+                    { $multiply: ["$$receita.value", -1] }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        // Opcional: Remove o array de receitas da resposta
+        $project: {
+          receitas: 0
+        }
+      }
+    ]);
+
+    res.json(categoriasComRevenue);
   } catch (err) {
+    console.error('Erro ao obter categorias com revenueValue:', err);
     res.status(500).json({ error: err.message });
   }
 });
