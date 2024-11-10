@@ -146,6 +146,10 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:type", async (req, res) => {
+  
+})
+
 /**
  * @swagger
  * /receitas/{id}:

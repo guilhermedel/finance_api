@@ -95,7 +95,6 @@ router.post("/", async (req, res) => {
       userId,
       accountBankingNames,
       paymentMethod,
-      date
     } = req.body;
 
     // 1. Buscar o Cartão pelo número
@@ -104,12 +103,12 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ message: 'Cartão não encontrado com o número fornecido.' });
     }
 
-    if (cartao.cardBalance < value) {
+    if (cartao.cardLimited < value) {
       return res.status(400).json({ message: 'Saldo insuficiente na cartao bancária.' });
     }
 
     // 5. Diminuir o saldo da cartao bancária
-    cartao.cardBalance -= value;
+    cartao.cardLimited -= value;
     await cartao.save();
     // 2. Buscar a Categoria pelo nome
     const categoria = await Categoria.findOne({ name: categoryName }).session(session);
@@ -136,7 +135,7 @@ router.post("/", async (req, res) => {
     const novaCompra = new Compra({
       store,
       value,
-      date: date ? new Date(date) : new Date(),
+      date:new Date(date),
       paymentMethod,
       cardId: cartao._id,
       categoryId: categoria._id,
@@ -147,6 +146,16 @@ router.post("/", async (req, res) => {
 
     // 7. Salvar a compra no banco de dados
     await novaCompra.save();
+    const novaReceita = new Receita({
+      value: value,
+      type: 'saida',
+      origins: store, // Pode ajustar conforme necessário
+      date: new Date(date),
+      userId: userId,
+      categoryId: categoria._id
+    });
+
+    await novaReceita.save();
     res.status(201).json(novaCompra);
   } catch (err) {
     res.status(500).json({ message: 'Erro interno do servidor.' });
