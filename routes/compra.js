@@ -123,7 +123,7 @@ router.post("/", async (req, res) => {
 
     // 5. Diminuir o saldo da conta bancária
     conta.accountBalance -= value;
-    await conta.save({ accountBalance });
+    await conta.save();
 
     // 6. Criar a nova compra com os IDs encontrados
     const novaCompra = new Compra({
@@ -139,7 +139,7 @@ router.post("/", async (req, res) => {
     });
 
     // 7. Salvar a compra no banco de dados
-    await novaCompra.save({ session });
+    await novaCompra.save();
     res.status(201).json(novaCompra);
   } catch (err) {
     res.status(500).json({ message: 'Erro interno do servidor.' });
