@@ -81,6 +81,10 @@ const router = express.Router();
 // Criar um novo cartão
 router.post("/", async (req, res) => {
   try {
+    const cartaoExistente = await Cartao.findOne({ number });
+    if (cartaoExistente) {
+      return res.status(400).json({ message: "Cartão já cadastrado" });
+    }
     const novoCartao = new Cartao(req.body);
     await novoCartao.save();
     res.status(201).json(novoCartao);

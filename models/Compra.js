@@ -6,6 +6,7 @@ const CompraSchema = new mongoose.Schema({
   date: { type: String, required: true },
   card: { type: mongoose.Schema.Types.ObjectId, ref: 'Cartao' },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
   account: {type : Number , required:true},
   paymentMethod: { type: String, enum: ['credito', 'debito','pix'], required: true },   
 });

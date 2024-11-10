@@ -68,6 +68,10 @@ const router = express.Router();
 // Criar uma nova categoria
 router.post("/", async (req, res) => {
   try {
+    const categoriaExistente = await Categoria.findOne({ categoryName, user });
+    if (categoriaExistente) {
+      return res.status(400).json({ message: "Categoria já existe para este usuário" });
+    }
     const novaCategoria = new Categoria(req.body);
     await novaCategoria.save();
     res.status(201).json(novaCategoria);
