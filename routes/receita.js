@@ -95,7 +95,18 @@ const router = express.Router();
 // Criar uma nova receita
 router.post("/", async (req, res) => {
   try {
-    const novaReceita = new Receita(req.body);
+    const {
+      value,
+      type,
+      origins,
+      categoryName,
+      userId,
+    } = req.body;
+    const categoria = await Categoria.findOne({ name: categoryName });
+    if (!categoria) {
+      return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
+    }
+    const novaReceita = new Receita({...req.body,categoryId:categoria._id,date:new Date()});
     await novaReceita.save();
     res.status(201).json(novaReceita);
   } catch (err) {
