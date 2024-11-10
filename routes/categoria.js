@@ -18,18 +18,18 @@ const router = express.Router();
  *     Categoria:
  *       type: object
  *       required:
- *         - nome
+ *         - name
  *       properties:
  *         id:
  *           type: string
  *           description: ID único da categoria
- *         nome:
+ *         name:
  *           type: string
- *           description: Nome da categoria
+ *           description: name da categoria
  *           example: "Eletrônicos"
  *       example:
  *         id: "60d0fe4f5311236168a109cd"
- *         nome: "Eletrônicos"
+ *         name: "Eletrônicos"
  *     Error:
  *       type: object
  *       properties:

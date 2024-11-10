@@ -1,48 +1,50 @@
-// routes/cartoes.js
+// routes/contas.js
 import express from "express";
-import Cartao from "../models/Cartao.js";
+import ContaBancaria from "../models/ContaBancaria.js";
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Cartões
- *   description: Operações relacionadas a cartões
+ *   name: contas
+ *   description: Operações relacionadas a contas
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Cartao:
+ *     ContaBancaria:
  *       type: object
  *       required:
- *         - number
- *         - validity
- *         - user
+ *         - card
+ *         - value
+ *         - date
  *       properties:
  *         id:
  *           type: string
- *           description: ID único do cartão
- *         number:
+ *           description: ID único da ContaBancaria
+ *         card:
  *           type: string
- *           description: Número do cartão
- *           example: "1234-5678-9012-3456"
- *         validity:
- *           type: string
- *           format: date
- *           description: Data de validity do cartão
- *           example: "2025-12-31"
- *         user:
- *           type: string
- *           description: ID do usuário associado
+ *           description: ID do cartão utilizado na ContaBancaria
  *           example: "60d0fe4f5311236168a109ca"
+ *         value:
+ *           type: number
+ *           format: float
+ *           description: value da ContaBancaria
+ *           example: 150.75
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: date e hora da ContaBancaria
+ *           example: "2024-04-27T14:30:00Z"
+ * 
  *       example:
- *         id: "60d0fe4f5311236168a109cb"
- *         number: "1234-5678-9012-3456"
- *         validity: "2025-12-31"
- *         user: "60d0fe4f5311236168a109ca"
+ *         id: "60d0fe4f5311236168a109ce"
+ *         card: "60d0fe4f5311236168a109ca"
+ *         value: 150.75
+ *         date: "2024-04-27T14:30:00Z"
  *     Error:
  *       type: object
  *       properties:
@@ -54,23 +56,23 @@ const router = express.Router();
 
 /**
  * @swagger
- * /cartoes:
+ * /contas:
  *   post:
- *     summary: Cria um novo cartão
- *     tags: [Cartões]
+ *     summary: Cria uma nova ContaBancaria
+ *     tags: [contas]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Cartao'
+ *             $ref: '#/components/schemas/ContaBancaria'
  *     responses:
  *       201:
- *         description: Cartão criado com sucesso
+ *         description: ContaBancaria criada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Cartao'
+ *               $ref: '#/components/schemas/ContaBancaria'
  *       500:
  *         description: Erro no servidor
  *         content:
@@ -78,12 +80,12 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Criar um novo cartão
+// Criar uma nova ContaBancaria
 router.post("/", async (req, res) => {
   try {
-    const novoCartao = new Cartao(req.body);
-    await novoCartao.save();
-    res.status(201).json(novoCartao);
+    const novaContaBancaria = new ContaBancaria(req.body);
+    await novaContaBancaria.save();
+    res.status(201).json(novaContaBancaria);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -91,19 +93,19 @@ router.post("/", async (req, res) => {
 
 /**
  * @swagger
- * /cartoes:
+ * /contas:
  *   get:
- *     summary: Retorna uma lista de cartões
- *     tags: [Cartões]
+ *     summary: Retorna uma lista de contas
+ *     tags: [contas]
  *     responses:
  *       200:
- *         description: Lista de cartões
+ *         description: Lista de contas
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Cartao'
+ *                 $ref: '#/components/schemas/ContaBancaria'
  *       500:
  *         description: Erro no servidor
  *         content:
@@ -111,11 +113,11 @@ router.post("/", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Obter todos os cartões
+// Obter todas as contas
 router.get("/", async (req, res) => {
   try {
-    const cartoes = await Cartao.find().populate("user");
-    res.json(cartoes);
+    const contas = await ContaBancaria.find().populate("user");
+    res.json(contas);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -123,26 +125,26 @@ router.get("/", async (req, res) => {
 
 /**
  * @swagger
- * /cartoes/{id}:
+ * /contas/{id}:
  *   get:
- *     summary: Obtém um cartão pelo ID
- *     tags: [Cartões]
+ *     summary: Obtém uma ContaBancaria pelo ID
+ *     tags: [contas]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID do cartão
+ *         description: ID da ContaBancaria
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Cartão encontrado
+ *         description: ContaBancaria encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Cartao'
+ *               $ref: '#/components/schemas/ContaBancaria'
  *       404:
- *         description: Cartão não encontrado
+ *         description: ContaBancaria não encontrada
  *         content:
  *           application/json:
  *             schema:
@@ -154,14 +156,14 @@ router.get("/", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Obter um cartão por ID
+// Obter uma ContaBancaria por ID
 router.get("/:id", async (req, res) => {
   try {
-    const cartao = await Cartao.findById(req.params.id).populate("user");
-    if (!cartao) {
-      return res.status(404).json({ message: "Cartão não encontrado" });
+    const ContaBancaria = await ContaBancaria.findById(req.params.id).populate("card");
+    if (!ContaBancaria) {
+      return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }
-    res.json(cartao);
+    res.json(ContaBancaria);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -169,15 +171,15 @@ router.get("/:id", async (req, res) => {
 
 /**
  * @swagger
- * /cartoes/{id}:
+ * /contas/{id}:
  *   put:
- *     summary: Atualiza um cartão pelo ID
- *     tags: [Cartões]
+ *     summary: Atualiza uma ContaBancaria pelo ID
+ *     tags: [contas]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID do cartão
+ *         description: ID da ContaBancaria
  *         schema:
  *           type: string
  *     requestBody:
@@ -185,16 +187,16 @@ router.get("/:id", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Cartao'
+ *             $ref: '#/components/schemas/ContaBancaria'
  *     responses:
  *       200:
- *         description: Cartão atualizado com sucesso
+ *         description: ContaBancaria atualizada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Cartao'
+ *               $ref: '#/components/schemas/ContaBancaria'
  *       404:
- *         description: Cartão não encontrado
+ *         description: ContaBancaria não encontrada
  *         content:
  *           application/json:
  *             schema:
@@ -206,18 +208,18 @@ router.get("/:id", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Atualizar um cartão por ID
+// Atualizar uma ContaBancaria por ID
 router.put("/:id", async (req, res) => {
   try {
-    const cartaoAtualizado = await Cartao.findByIdAndUpdate(
+    const ContaBancariaAtualizada = await ContaBancaria.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true },
     );
-    if (!cartaoAtualizado) {
-      return res.status(404).json({ message: "Cartão não encontrado" });
+    if (!ContaBancariaAtualizada) {
+      return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }
-    res.json(cartaoAtualizado);
+    res.json(ContaBancariaAtualizada);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -225,20 +227,20 @@ router.put("/:id", async (req, res) => {
 
 /**
  * @swagger
- * /cartoes/{id}:
+ * /contas/{id}:
  *   delete:
- *     summary: Deleta um cartão pelo ID
- *     tags: [Cartões]
+ *     summary: Deleta uma ContaBancaria pelo ID
+ *     tags: [contas]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID do cartão
+ *         description: ID da ContaBancaria
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Cartão deletado com sucesso
+ *         description: ContaBancaria deletada com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -246,9 +248,9 @@ router.put("/:id", async (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Cartão deletado com sucesso"
+ *                   example: "ContaBancaria deletada com sucesso"
  *       404:
- *         description: Cartão não encontrado
+ *         description: ContaBancaria não encontrada
  *         content:
  *           application/json:
  *             schema:
@@ -260,14 +262,14 @@ router.put("/:id", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-// Deletar um cartão por ID
+// Deletar uma ContaBancaria por ID
 router.delete("/:id", async (req, res) => {
   try {
-    const cartaoDeletado = await Cartao.findByIdAndDelete(req.params.id);
-    if (!cartaoDeletado) {
-      return res.status(404).json({ message: "Cartão não encontrado" });
+    const contaDeletada = await ContaBancaria.findByIdAndDelete(req.params.id);
+    if (!contaDeletada) {
+      return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }
-    res.json({ message: "Cartão deletado com sucesso" });
+    res.json({ message: "Conta Bancaria deletada com sucesso" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

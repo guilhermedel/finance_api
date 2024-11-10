@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const UsuarioSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  age: { type: Number,required:true },
   dateBirthday: { type: String,required:true },
   gender: { type: String,enum: ['M', 'F'],required:true },
   email: { type: String, required: true, unique: true },

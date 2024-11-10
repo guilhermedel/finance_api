@@ -18,32 +18,33 @@ const router = express.Router();
  *     Compra:
  *       type: object
  *       required:
- *         - cartao
- *         - valor
- *         - data
+ *         - card
+ *         - value
+ *         - date
  *       properties:
  *         id:
  *           type: string
  *           description: ID único da compra
- *         cartao:
+ *         card:
  *           type: string
  *           description: ID do cartão utilizado na compra
  *           example: "60d0fe4f5311236168a109ca"
- *         valor:
+ *         value:
  *           type: number
  *           format: float
- *           description: Valor da compra
+ *           description: value da compra
  *           example: 150.75
- *         data:
+ *         date:
  *           type: string
  *           format: date-time
- *           description: Data e hora da compra
+ *           description: date e hora da compra
  *           example: "2024-04-27T14:30:00Z"
+ * 
  *       example:
  *         id: "60d0fe4f5311236168a109ce"
- *         cartao: "60d0fe4f5311236168a109ca"
- *         valor: 150.75
- *         data: "2024-04-27T14:30:00Z"
+ *         card: "60d0fe4f5311236168a109ca"
+ *         value: 150.75
+ *         date: "2024-04-27T14:30:00Z"
  *     Error:
  *       type: object
  *       properties:
@@ -115,7 +116,7 @@ router.post("/", async (req, res) => {
 // Obter todas as compras
 router.get("/", async (req, res) => {
   try {
-    const compras = await Compra.find().populate("cartao");
+    const compras = await Compra.find().populate("card");
     res.json(compras);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -158,7 +159,7 @@ router.get("/", async (req, res) => {
 // Obter uma compra por ID
 router.get("/:id", async (req, res) => {
   try {
-    const compra = await Compra.findById(req.params.id).populate("cartao");
+    const compra = await Compra.findById(req.params.id).populate("card");
     if (!compra) {
       return res.status(404).json({ message: "Compra não encontrada" });
     }

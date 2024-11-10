@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const CategoriaSchema = new mongoose.Schema({
-  nome: { type: String, required: true },
-  icon : { type: String,required: true}
+  name: { type: String, required: true },
+  color : { type: String,required: true}
 });
 
 const Categoria = mongoose.model('Categoria', CategoriaSchema);

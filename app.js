@@ -10,6 +10,7 @@ import categoriaRoutes from "./routes/categoria.js";
 import receitaRoutes from "./routes/receita.js";
 import cartaoRoutes from "./routes/cartao.js";
 import compraRoutes from "./routes/compra.js";
+import contaBancariaRoutes from "./routes/contaBancaria.js";
 
 
 // Conectar ao MongoDB
@@ -33,7 +34,7 @@ const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagg
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/categorias", categoriaRoutes);
 app.use("/api/receitas", receitaRoutes);
-
+app.use("/api/contas",contaBancariaRoutes);
 app.use("/api/cartoes", cartaoRoutes);
 app.use("/api/compras", compraRoutes);
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec,{customCssUrl:CSS_URL}));
