@@ -157,9 +157,10 @@ router.get("/", async (req, res) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Obter uma ContaBancaria por ID
-router.get("/:id", async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
-    const ContaBancaria = await ContaBancaria.findById(req.params.id).populate("card");
+    const {userId} = req.params
+    const ContaBancaria = await ContaBancaria.findOne({userId: userId}).populate("card");
     if (!ContaBancaria) {
       return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }

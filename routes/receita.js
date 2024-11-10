@@ -96,7 +96,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const {
-      value,
+      revenueValue,
       type,
       origins,
       categoryName,

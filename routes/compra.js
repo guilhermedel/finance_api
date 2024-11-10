@@ -1,6 +1,7 @@
 // routes/compras.js
 import express from "express";
 import Compra from "../models/Compra.js";
+import ContaBancaria from "../models/ContaBancaria.js";
 
 const router = express.Router();
 
@@ -89,7 +90,7 @@ router.post("/", async (req, res) => {
       cardNumber,
       categoryName,
       userId,
-      accountNumber,
+      accountBankingNames,
       paymentMethod,
     } = req.body;
     
@@ -107,9 +108,9 @@ router.post("/", async (req, res) => {
     }
 
     // 3. Buscar o Usuário pela conta (número)
-    const usuario = await Usuario.findOne({ number: accountNumber });
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado com o número de conta fornecido.' });
+    const conta = await ContaBancaria.findOne({ accountBankingName: accountBankingNames });
+    if (!conta) {
+      return res.status(404).json({ error: 'Conta não encontrada.' });
     }
 
     // 4. Criar a nova compra com os IDs encontrados
@@ -120,7 +121,7 @@ router.post("/", async (req, res) => {
       paymentMethod,
       cardId: cartao._id,
       categoryId: categoria._id,
-      userId: usuario._id,
+      userId: userId,
       accountId: conta._id
       // Outros campos adicionais
     };
