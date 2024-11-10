@@ -6,6 +6,7 @@ const CartaoSchema = new mongoose.Schema({
   cardDateValidity: { type: String, required: true },
   cardName: { type: String, required: true },
   cardDateClose: {type: Number, required: true},
+  cardBalance: {type: Number, required: true},
   cardLimited: {type: Number, required: true},
   cardDateMaturity: {type: Number, required: true},
   cardType: { type: String,enum:['credito','debito'], required: true },

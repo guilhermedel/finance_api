@@ -99,16 +99,21 @@ router.post("/", async (req, res) => {
     } = req.body;
 
     // 1. Buscar o Cartão pelo número
-    const cartao = await Cartao.findOne({ number: cardNumber }).session(session);
+    const cartao = await Cartao.findOne({ cardNumber: cardNumber }).session(session);
     if (!cartao) {
-      session.endSession();
       return res.status(404).json({ message: 'Cartão não encontrado com o número fornecido.' });
     }
 
+    if (cartao.cardBalance < value) {
+      return res.status(400).json({ message: 'Saldo insuficiente na cartao bancária.' });
+    }
+
+    // 5. Diminuir o saldo da cartao bancária
+    cartao.cardBalance -= value;
+    await cartao.save();
     // 2. Buscar a Categoria pelo nome
     const categoria = await Categoria.findOne({ name: categoryName }).session(session);
     if (!categoria) {
-      session.endSession();
       return res.status(404).json({ message: 'Categoria não encontrada com o nome fornecido.' });
     }
 
