@@ -43,10 +43,10 @@ const router = express.Router();
  *         number: "1234-5678-9012-3456"
  *         validity: "2025-12-31"
  *         userId: "60d0fe4f5311236168a109ca"
- *     Error:
+ *     message:
  *       type: object
  *       properties:
- *         error:
+ *         message:
  *           type: string
  *           description: Mensagem de erro
  *           example: "Erro no servidor"
@@ -76,7 +76,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  */
 // Criar um novo cartão
 router.post("/", async (req, res) => {
@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     await novoCartao.save();
     res.status(201).json(novoCartao);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -113,7 +113,7 @@ router.post("/", async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  */
 // Obter todos os cartões
 router.get("/", async (req, res) => {
@@ -121,7 +121,7 @@ router.get("/", async (req, res) => {
     const cartoes = await Cartao.find().populate("userId");
     res.json(cartoes);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -150,13 +150,13 @@ router.get("/", async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  *       500:
  *         description: Erro no servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  */
 // Obter um cartão por ID
 router.get("/:id", async (req, res) => {
@@ -167,7 +167,7 @@ router.get("/:id", async (req, res) => {
     }
     res.json(cartao);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -202,13 +202,13 @@ router.get("/:id", async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  *       500:
  *         description: Erro no servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  */
 // Atualizar um cartão por ID
 router.put("/:id", async (req, res) => {
@@ -223,7 +223,7 @@ router.put("/:id", async (req, res) => {
     }
     res.json(cartaoAtualizado);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -256,13 +256,13 @@ router.put("/:id", async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  *       500:
  *         description: Erro no servidor
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/message'
  */
 // Deletar um cartão por ID
 router.delete("/:id", async (req, res) => {
@@ -273,7 +273,7 @@ router.delete("/:id", async (req, res) => {
     }
     res.json({ message: "Cartão deletado com sucesso" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
