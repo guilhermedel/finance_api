@@ -5,10 +5,8 @@ const CartaoSchema = new mongoose.Schema({
   cardCVC: { type: String, required: true },
   cardDateValidity: { type: String, required: true },
   cardName: { type: String, required: true },
-  cardDateClose: {type: Number, required: true},
   cardLimited: {type: Number, required: true},
-  cardDateMaturity: {type: Number, required: true},
-  cardType: { type: String,enum:['credito','debito'], required: true },
+  cardFlag: { type: String,enum:['visa','mastercard'], required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
 });
 

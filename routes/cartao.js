@@ -221,7 +221,7 @@ router.put("/:id", async (req, res) => {
     if (!cartaoAtualizado) {
       return res.status(404).json({ message: "Cartão não encontrado" });
     }
-    res.json(cartaoAtualizado);
+    res.json({message:"Cartao atualizado com sucesso",response:cartaoAtualizado});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
