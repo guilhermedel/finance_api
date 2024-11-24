@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const CartaoSchema = new mongoose.Schema({
   cardNumber: { type: String, required: true },
   cardDateValidity: { type: String, required: true },
+  cardInvoice: {type: Number, required: true},
   cardName: { type: String, required: true },
   cardLimited: {type: Number, required: true},
   cardFlag: { type: String,enum:['visa','mastercard'], required: true },
