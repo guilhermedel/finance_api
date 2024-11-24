@@ -96,13 +96,13 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const {
-      value,
-      type,
-      name,
-      categoryName,
+      expenseCategory,
+      expenseType,
+      expenseValue,
+      expenseName,
       userId,
     } = req.body;
-    const categoria = await Categoria.findOne({ name: categoryName });
+    const categoria = await Categoria.findOne({ name: expenseCategory });
     if (!categoria) {
       return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
     }
