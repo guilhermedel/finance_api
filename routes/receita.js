@@ -2,6 +2,7 @@
 import express from "express";
 import Receita from "../models/Receita.js";
 import Categoria from '../models/Categoria.js'
+import ContaBancaria from "../models/ContaBancaria.js";
 
 const router = express.Router();
 
@@ -95,21 +96,39 @@ const router = express.Router();
 // Criar uma nova receita
 router.post("/", async (req, res) => {
   try {
-    const {
-      expenseCategory,
-      expenseType,
-      expenseValue,
-      expenseEstablishment,
-      expenseName,
-      userId,
-    } = req.body;
-    const categoria = await Categoria.findOne({ categoryName: expenseCategory });
-    if (!categoria) {
-      return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
+    if (req.body.expenseType === "saida") {
+      const {
+        expenseCategory,
+        expenseType,
+        expenseValue,
+        expenseEstablishment,
+        expenseName,
+        userId,
+      } = req.body;
+      const categoria = await Categoria.findOne({ categoryName: expenseCategory });
+      if (!categoria) {
+        return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
+      }
+      const novaReceita = new Receita({ ...req.body, categoryId: categoria._id, date: new Date() });
+      await novaReceita.save();
+      res.status(201).json(novaReceita);
     }
-    const novaReceita = new Receita({...req.body,categoryId:categoria._id,date:new Date()});
-    await novaReceita.save();
-    res.status(201).json(novaReceita);
+    else {
+      const {
+        expanseName,
+        expenseType,
+        expenseValue,
+        expenseAccount,
+        userId,
+      } = req.body;
+      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount });
+      if (!contaBancaria) {
+        return res.status(404).json({ error: 'Conta bancaria não encontrada com o nome fornecido.' });
+      }
+      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, date: new Date() });
+      await novaReceita.save();
+      res.status(201).json(novaReceita);
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -149,8 +168,14 @@ router.get("/", async (req, res) => {
 
 router.get("/:type", async (req, res) => {
   try {
-    const receitas = await Receita.find({expenseType: req.params.type}).populate("userId categoryId").toArray();
-    res.json(receitas);
+    if (req.params.type !== "saida") {
+      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId accountId").toArray();
+      res.json(receitas);
+    }
+    else {
+      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId").toArray();
+      res.json(receitas);
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -289,7 +314,7 @@ router.put("/:id", async (req, res) => {
       { new: true },
     );
     if (!receitaAtualizada) {
-      return res.status(404).json({ message: "Receita não encontrada",response: req.body });
+      return res.status(404).json({ message: "Receita não encontrada", response: req.body });
     }
     res.json(receitaAtualizada);
   } catch (err) {
