@@ -99,6 +99,7 @@ router.post("/", async (req, res) => {
       expenseCategory,
       expenseType,
       expenseValue,
+      expenseEstablishment,
       expenseName,
       userId,
     } = req.body;
