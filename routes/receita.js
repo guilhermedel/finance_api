@@ -139,7 +139,7 @@ router.post("/", async (req, res) => {
 // Obter todas as receitas
 router.get("/", async (req, res) => {
   try {
-    const receitas = await Receita.find().populate("userId categoryId accountId");
+    const receitas = await Receita.find().populate("userId categoryId");
     res.json(receitas);
   } catch (err) {
     res.status(500).json({ error: err.message });
