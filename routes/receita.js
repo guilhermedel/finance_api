@@ -148,7 +148,12 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:type", async (req, res) => {
-  
+  try {
+    const receitas = await Receita.find({type: req.params.type}).populate("userId categoryId").toArray();
+    res.json(receitas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 })
 
 /**
@@ -284,7 +289,7 @@ router.put("/:id", async (req, res) => {
       { new: true },
     );
     if (!receitaAtualizada) {
-      return res.status(404).json({ message: "Receita não encontrada" });
+      return res.status(404).json({ message: "Receita não encontrada",response: req.body });
     }
     res.json(receitaAtualizada);
   } catch (err) {
