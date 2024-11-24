@@ -102,7 +102,7 @@ router.post("/", async (req, res) => {
       expenseName,
       userId,
     } = req.body;
-    const categoria = await Categoria.findOne({ name: expenseCategory });
+    const categoria = await Categoria.findOne({ categoryName: expenseCategory });
     if (!categoria) {
       return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
     }
