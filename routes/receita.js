@@ -96,9 +96,8 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const {
-      revenueValue,
+      value,
       type,
-      origins,
       categoryName,
       userId,
     } = req.body;
@@ -139,7 +138,7 @@ router.post("/", async (req, res) => {
 // Obter todas as receitas
 router.get("/", async (req, res) => {
   try {
-    const receitas = await Receita.find().populate("userId categoryId");
+    const receitas = await Receita.find().populate("userId categoryId accountId");
     res.json(receitas);
   } catch (err) {
     res.status(500).json({ error: err.message });
