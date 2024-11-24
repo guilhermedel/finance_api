@@ -169,11 +169,11 @@ router.get("/", async (req, res) => {
 router.get("/:type", async (req, res) => {
   try {
     if (req.params.type !== "saida") {
-      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId accountId").toArray();
+      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId accountId");
       res.json(receitas);
     }
     else {
-      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId").toArray();
+      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId");
       res.json(receitas);
     }
   } catch (err) {
