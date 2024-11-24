@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const CartaoSchema = new mongoose.Schema({
   cardNumber: { type: String, required: true },
-  cardCVC: { type: String, required: true },
   cardDateValidity: { type: String, required: true },
   cardName: { type: String, required: true },
   cardLimited: {type: Number, required: true},
