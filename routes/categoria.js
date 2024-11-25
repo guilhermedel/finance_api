@@ -230,7 +230,11 @@ router.get("/:id", async (req, res) => {
       {
         // Opcional: Remove o array de receitas da resposta
         $project: {
-          receitas: 1
+          receitas: 1,
+          categoryName: 1,
+          categoryColor: 1,
+          revenueValue: 1,
+          _id:1
         }
       }
     ]);
