@@ -1,6 +1,7 @@
 // routes/categorias.js
 import express from "express";
 import Categoria from "../models/Categoria.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
