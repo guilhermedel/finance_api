@@ -237,7 +237,8 @@ router.get("/:id", async (req, res) => {
                     in: {
                       $cond: [
                         { $eq: ["$$receita.expenseType", "entrada"] },
-                        "$$receita.expenseValue" // Soma apenas os valores de entrada
+                        "$$receita.expenseValue",
+                        { $multiply: ["$$receita.expenseValue", -1] }
                       ]
                     }
                   }
@@ -251,7 +252,8 @@ router.get("/:id", async (req, res) => {
                     in: {
                       $cond: [
                         { $eq: ["$$receita.expenseType", "saida"] },
-                        "$$receita.expenseValue" // Soma apenas os valores de saída
+                        "$$receita.expenseValue",
+                        { $multiply: ["$$receita.expenseValue", -1] }
                       ]
                     }
                   }
