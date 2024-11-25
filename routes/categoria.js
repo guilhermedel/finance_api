@@ -143,7 +143,7 @@ router.get("/", async (req, res) => {
           categoryName: 1,
           categoryColor: 1,
           revenueValue: 1,
-          _id:1
+          _id: 1
         }
       }
     ]);
@@ -226,6 +226,30 @@ router.get("/:id", async (req, res) => {
                 }
               }
             }
+          },
+          categoryBalance: {
+            $subtract: [
+              {
+                $sum: {
+                  $filter: {
+                    input: "$receitas",
+                    as: "receita",
+                    cond: { $eq: ["$$receita.expenseType", "entrada"] }
+                  }
+                }
+              },
+              {
+                $sum: {
+                  $filter: {
+                    input: "$receitas",
+                    as: "receita",
+                    cond: { $eq: ["$$receita.expenseType", "saida"] },
+                    // Somente soma os valores de saída
+                    in: "$$receita.expenseValue"
+                  }
+                }
+              }
+            ]
           }
         }
       },
@@ -235,8 +259,9 @@ router.get("/:id", async (req, res) => {
           receitas: 1,
           categoryName: 1,
           categoryColor: 1,
+          categoryBalance: 1,
           revenueValue: 1,
-          _id:1
+          _id: 1
         }
       }
     ]);
