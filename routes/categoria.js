@@ -213,15 +213,17 @@ router.get("/:id", async (req, res) => {
         // Adiciona o campo revenueValue calculando a soma dos valores do tipo 'saida'
         $addFields: {
           revenueValue: {
-            $map: {
-              input: "$receitas",
-              as: "receita",
-              in: {
-                $cond: [
-                  { $eq: ["$$receita.expenseType", "saida"] },
-                  "$$receita.expenseValue",
-                  { $multiply: ["$$receita.expenseValue", -1] }
-                ]
+            $sum: {
+              $map: {
+                input: "$receitas",
+                as: "receita",
+                in: {
+                  $cond: [
+                    { $eq: ["$$receita.expenseType", "saida"] },
+                    "$$receita.expenseValue",
+                    { $multiply: ["$$receita.expenseValue", -1] }
+                  ]
+                }
               }
             }
           }
