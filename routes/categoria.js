@@ -139,7 +139,7 @@ router.get("/", async (req, res) => {
       {
         // Opcional: Remove o array de receitas da resposta
         $project: {
-          receitas: 0
+          receitas: 1
         }
       }
     ]);
@@ -226,7 +226,7 @@ router.get("/:id", async (req, res) => {
       {
         // Opcional: Remove o array de receitas da resposta
         $project: {
-          receitas: 0
+          receitas: 1
         }
       }
     ]);
