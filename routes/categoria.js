@@ -187,7 +187,7 @@ router.get("/:id", async (req, res) => {
       {
         // Filtra para pegar apenas a categoria específica pelo ID
         $match: {
-          _id: mongoose.Types.ObjectId(categoriaId) // Converte o ID para ObjectId do MongoDB
+          _id: new mongoose.Types.ObjectId(categoriaId) // Converte o ID para ObjectId do MongoDB
         }
       },
       {
