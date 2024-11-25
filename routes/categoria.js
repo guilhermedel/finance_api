@@ -231,21 +231,29 @@ router.get("/:id", async (req, res) => {
             $subtract: [
               {
                 $sum: {
-                  $filter: {
+                  $map: {
                     input: "$receitas",
                     as: "receita",
-                    cond: { $eq: ["$$receita.expenseType", "entrada"] }
+                    in: {
+                      $cond: [
+                        { $eq: ["$$receita.expenseType", "entrada"] },
+                        "$$receita.expenseValue" // Soma apenas os valores de entrada
+                      ]
+                    }
                   }
                 }
               },
               {
                 $sum: {
-                  $filter: {
+                  $map: {
                     input: "$receitas",
                     as: "receita",
-                    cond: { $eq: ["$$receita.expenseType", "saida"] },
-                    // Somente soma os valores de saída
-                    in: "$$receita.expenseValue"
+                    in: {
+                      $cond: [
+                        { $eq: ["$$receita.expenseType", "saida"] },
+                        "$$receita.expenseValue" // Soma apenas os valores de saída
+                      ]
+                    }
                   }
                 }
               }
