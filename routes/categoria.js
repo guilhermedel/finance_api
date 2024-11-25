@@ -120,16 +120,10 @@ router.get("/", async (req, res) => {
         $addFields: {
           revenueValue: {
             $sum: {
-              $map: {
+              $filter: {
                 input: "$receitas",
                 as: "receita",
-                in: {
-                  $cond: [
-                    { $eq: ["$$receita.type", "entrada"] },
-                    "$$receita.value",
-                    { $multiply: ["$$receita.value", -1] }
-                  ]
-                }
+                cond: { $eq: ["$$receita.expenseType", "saida"] }
               }
             }
           }
@@ -186,12 +180,53 @@ router.get("/", async (req, res) => {
 // Obter uma categoria por ID
 router.get("/:id", async (req, res) => {
   try {
-    const categoria = await Categoria.findById(req.params.id);
-    if (!categoria) {
-      return res.status(404).json({ message: "Categoria não encontrada" });
+    const categoriaId = req.params.id; // Obtém o ID da categoria dos parâmetros da requisição
+
+    const categoriasComRevenue = await Categoria.aggregate([
+      {
+        // Filtra para pegar apenas a categoria específica pelo ID
+        $match: {
+          _id: mongoose.Types.ObjectId(categoriaId) // Converte o ID para ObjectId do MongoDB
+        }
+      },
+      {
+        // Realiza um lookup para trazer as receitas associadas à categoria
+        $lookup: {
+          from: "receitas", // Nome da coleção de receitas no MongoDB
+          localField: "_id",
+          foreignField: "categoryId",
+          as: "receitas"
+        }
+      },
+      {
+        // Adiciona o campo revenueValue calculando a soma dos valores do tipo 'saida'
+        $addFields: {
+          revenueValue: {
+            $sum: {
+              $filter: {
+                input: "$receitas",
+                as: "receita",
+                cond: { $eq: ["$$receita.expenseType", "saida"] }
+              }
+            }
+          }
+        }
+      },
+      {
+        // Opcional: Remove o array de receitas da resposta
+        $project: {
+          receitas: 0
+        }
+      }
+    ]);
+
+    if (categoriasComRevenue.length === 0) {
+      return res.status(404).json({ message: "Categoria não encontrada." });
     }
-    res.json(categoria);
+
+    res.json(categoriasComRevenue[0]); // Retorna a categoria específica encontrada
   } catch (err) {
+    console.error('Erro ao obter categoria com revenueValue:', err);
     res.status(500).json({ error: err.message });
   }
 });
