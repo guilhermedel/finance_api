@@ -143,6 +143,7 @@ router.get("/", async (req, res) => {
           categoryName: 1,
           categoryColor: 1,
           revenueValue: 1,
+          _id:1
         }
       }
     ]);
