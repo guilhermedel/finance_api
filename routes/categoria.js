@@ -121,10 +121,16 @@ router.get("/", async (req, res) => {
         $addFields: {
           revenueValue: {
             $sum: {
-              $filter: {
+              $map: {
                 input: "$receitas",
                 as: "receita",
-                cond: { $eq: ["$$receita.expenseType", "saida"] }
+                in: {
+                  $cond: [
+                    { $eq: ["$$receita.expenseType", "saida"] },
+                    "$$receita.expenseValue",
+                    { $multiply: ["$$receita.expenseValue", -1] }
+                  ]
+                }
               }
             }
           }
@@ -203,11 +209,15 @@ router.get("/:id", async (req, res) => {
         // Adiciona o campo revenueValue calculando a soma dos valores do tipo 'saida'
         $addFields: {
           revenueValue: {
-            $sum: {
-              $filter: {
-                input: "$receitas",
-                as: "receita",
-                cond: { $eq: ["$$receita.expenseType", "saida"] }
+            $map: {
+              input: "$receitas",
+              as: "receita",
+              in: {
+                $cond: [
+                  { $eq: ["$$receita.expenseType", "saida"] },
+                  "$$receita.expenseValue",
+                  { $multiply: ["$$receita.expenseValue", -1] }
+                ]
               }
             }
           }
