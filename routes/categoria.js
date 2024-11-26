@@ -238,7 +238,7 @@ router.get("/:id", async (req, res) => {
                       $cond: [
                         { $eq: ["$$receita.expenseType", "entrada"] },
                         "$$receita.expenseValue",
-                        { $multiply: ["$$receita.expenseValue", -1] }
+                        0
                       ]
                     }
                   }
@@ -253,7 +253,7 @@ router.get("/:id", async (req, res) => {
                       $cond: [
                         { $eq: ["$$receita.expenseType", "saida"] },
                         "$$receita.expenseValue",
-                        { $multiply: ["$$receita.expenseValue", -1] }
+                        0
                       ]
                     }
                   }
