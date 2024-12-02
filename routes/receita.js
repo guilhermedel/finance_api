@@ -109,6 +109,13 @@ router.post("/", async (req, res) => {
       if (!categoria) {
         return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
       }
+      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount });
+      if (!contaBancaria) {
+        return res.status(404).json({ error: 'Conta bancaria não encontrada com o nome fornecido.' });
+      }
+      // Aumentar o saldo da conta bancária
+      contaBancaria.accountBalance -= expenseValue;
+      await contaBancaria.save();
       const novaReceita = new Receita({ ...req.body, categoryId: categoria._id, date: new Date() });
       await novaReceita.save();
       res.status(201).json(novaReceita);
@@ -125,6 +132,10 @@ router.post("/", async (req, res) => {
       if (!contaBancaria) {
         return res.status(404).json({ error: 'Conta bancaria não encontrada com o nome fornecido.' });
       }
+      // Aumentar o saldo da conta bancária
+      contaBancaria.accountBalance += expenseValue;
+      await contaBancaria.save();
+
       const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, date: new Date() });
       await novaReceita.save();
       res.status(201).json(novaReceita);
@@ -159,7 +170,7 @@ router.post("/", async (req, res) => {
 // Obter todas as receitas
 router.get("/", async (req, res) => {
   try {
-    const receitas = await Receita.find().populate("userId categoryId");
+    const receitas = await Receita.find().populate("userId categoryId accountId");
     res.json(receitas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -173,7 +184,7 @@ router.get("/:type", async (req, res) => {
       res.json(receitas);
     }
     else {
-      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId");
+      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId accountId");
       res.json(receitas);
     }
   } catch (err) {
@@ -218,7 +229,7 @@ router.get("/:type", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const receita = await Receita.findById(req.params.id).populate(
-      "userId categoryId",
+      "userId categoryId accountId",
     );
     if (!receita) {
       return res.status(404).json({ message: "Receita não encontrada" });
