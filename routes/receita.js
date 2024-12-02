@@ -101,6 +101,7 @@ router.post("/", async (req, res) => {
         expenseCategory,
         expenseType,
         expenseValue,
+        expenseAccount,
         expenseEstablishment,
         expenseName,
         userId,
