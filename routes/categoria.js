@@ -143,6 +143,7 @@ router.get("/", async (req, res) => {
           categoryName: 1,
           categoryColor: 1,
           revenueValue: 1,
+          spendingLimit:1,
           _id: 1
         }
       }
@@ -271,6 +272,7 @@ router.get("/:id", async (req, res) => {
           categoryColor: 1,
           categoryBalance: 1,
           revenueValue: 1,
+          spendingLimit:1,
           _id: 1
         }
       }
