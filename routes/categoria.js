@@ -108,6 +108,10 @@ router.get("/", async (req, res) => {
   try {
     const categoriasComRevenue = await Categoria.aggregate([
       {
+        // Filtra as categorias pelo userId
+        $match: { userId: req.headers['userId'] }
+      },
+      {
         // Realiza um lookup para trazer as receitas associadas a cada categoria
         $lookup: {
           from: "receitas", // Nome da coleção de receitas no MongoDB
@@ -143,6 +147,7 @@ router.get("/", async (req, res) => {
           categoryName: 1,
           categoryColor: 1,
           revenueValue: 1,
+          userId: 1,
           spendingLimit:1,
           _id: 1
         }
@@ -198,7 +203,8 @@ router.get("/:id", async (req, res) => {
       {
         // Filtra para pegar apenas a categoria específica pelo ID
         $match: {
-          _id: new mongoose.Types.ObjectId(categoriaId) // Converte o ID para ObjectId do MongoDB
+          _id: new mongoose.Types.ObjectId(categoriaId),
+          userId: req.headers['userId']
         }
       },
       {
@@ -272,6 +278,7 @@ router.get("/:id", async (req, res) => {
           categoryColor: 1,
           categoryBalance: 1,
           revenueValue: 1,
+          userId: 1,
           spendingLimit:1,
           _id: 1
         }
