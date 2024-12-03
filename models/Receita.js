@@ -6,7 +6,7 @@ const ReceitaSchema = new mongoose.Schema({
   expenseName: { type: String, required: true },
   expenseEstablishment: { type: String },
   date: { type: Date, required: true },
-  accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'ContaBancaria'},
+  accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'ContaBancaria',required:true},
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
 });
