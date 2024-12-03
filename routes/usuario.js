@@ -289,9 +289,9 @@ router.post("/registro", async (req, res) => {
       message: "Usuário registrado com sucesso",
       response: {
         token: token,
-        id: usuario._id,
-        email: usuario.email,
-        name: usuario.name,
+        id: novoUsuario._id,
+        email: email,
+        name: name,
       },
     });
   } catch (err) {
