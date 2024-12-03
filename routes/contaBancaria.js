@@ -115,8 +115,9 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as contas
 router.get("/", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const contas = await ContaBancaria.find().populate("userId");
+    const contas = await ContaBancaria.find({userId: userId}).populate("userId");
     res.json(contas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -157,10 +158,10 @@ router.get("/", async (req, res) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Obter uma ContaBancaria por ID
-router.get("/:userId", async (req, res) => {
+router.get("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const {userId} = req.params
-    const ContaBancaria = await ContaBancaria.findOne({userId: userId});
+    const ContaBancaria = await ContaBancaria.findOne({_id: req.params.id, userId: userId});
     if (!ContaBancaria) {
       return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }
@@ -211,9 +212,10 @@ router.get("/:userId", async (req, res) => {
  */
 // Atualizar uma ContaBancaria por ID
 router.put("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const ContaBancariaAtualizada = await ContaBancaria.findByIdAndUpdate(
-      req.params.id,
+    const ContaBancariaAtualizada = await ContaBancaria.findOneAndUpdate(
+      {_id: req.params.id, userId: userId},
       req.body,
       { new: true },
     );
@@ -265,8 +267,9 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma ContaBancaria por ID
 router.delete("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const contaDeletada = await ContaBancaria.findByIdAndDelete(req.params.id);
+    const contaDeletada = await ContaBancaria.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!contaDeletada) {
       return res.status(404).json({ message: "Conta Bancaria não encontrada" });
     }

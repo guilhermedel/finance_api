@@ -69,7 +69,7 @@ const router = express.Router();
 // Criar uma nova categoria
 router.post("/", async (req, res) => {
   try {
-    const categoriaExistente = await Categoria.findOne({ categoryName: req.body.categoryName, userId: req.body.userId });
+    const categoriaExistente = await Categoria.findOne({ categoryName: req.body.categoryName, userId: req.headers['userId'] });
     if (categoriaExistente) {
       return res.status(400).json({ message: "Categoria já existe para este usuário" });
     }
@@ -198,7 +198,6 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const categoriaId = req.params.id; // Obtém o ID da categoria dos parâmetros da requisição
-
     const categoriasComRevenue = await Categoria.aggregate([
       {
         // Filtra para pegar apenas a categoria específica pelo ID
@@ -337,9 +336,10 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar uma categoria por ID
 router.put("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const categoriaAtualizada = await Categoria.findByIdAndUpdate(
-      req.params.id,
+    const categoriaAtualizada = await Categoria.findOneAndUpdate(
+      {_id: req.params.id, userId: userId},
       req.body,
       { new: true },
     );
@@ -391,8 +391,9 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma categoria por ID
 router.delete("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const categoriaDeletada = await Categoria.findByIdAndDelete(req.params.id);
+    const categoriaDeletada = await Categoria.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!categoriaDeletada) {
       return res.status(404).json({ message: "Categoria não encontrada" });
     }

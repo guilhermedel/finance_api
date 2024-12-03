@@ -80,8 +80,9 @@ const router = express.Router();
  */
 // Criar um novo cartão
 router.post("/", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const cartaoExistente = await Cartao.findOne({ cardNumber:req.body.cardNumber });
+    const cartaoExistente = await Cartao.findOne({ cardNumber:req.body.cardNumber, userId: userId });
     if (cartaoExistente) {
       return res.status(400).json({ message: "Cartão já cadastrado" });
     }
@@ -117,8 +118,9 @@ router.post("/", async (req, res) => {
  */
 // Obter todos os cartões
 router.get("/", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const cartoes = await Cartao.find().populate("userId");
+    const cartoes = await Cartao.find({userId: userId}).populate("userId");
     res.json(cartoes);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -160,8 +162,9 @@ router.get("/", async (req, res) => {
  */
 // Obter um cartão por ID
 router.get("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const cartao = await Cartao.findById(req.params.id).populate("userId");
+    const cartao = await Cartao.find({_id: req.params.id, userId: userId}).populate("userId");
     if (!cartao) {
       return res.status(404).json({ message: "Cartão não encontrado" });
     }
@@ -212,9 +215,10 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar um cartão por ID
 router.put("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const cartaoAtualizado = await Cartao.findByIdAndUpdate(
-      req.params.id,
+    const cartaoAtualizado = await Cartao.findOneAndUpdate(
+      {_id: req.params.id, userId: userId},
       req.body,
       { new: true },
     );
@@ -266,8 +270,9 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar um cartão por ID
 router.delete("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const cartaoDeletado = await Cartao.findByIdAndDelete(req.params.id);
+    const cartaoDeletado = await Cartao.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!cartaoDeletado) {
       return res.status(404).json({ message: "Cartão não encontrado" });
     }

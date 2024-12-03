@@ -170,8 +170,9 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as receitas
 router.get("/", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const receitas = await Receita.find().populate("userId categoryId accountId");
+    const receitas = await Receita.find({userId: userId}).populate("userId categoryId accountId");
     res.json(receitas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -179,19 +180,26 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:type", async (req, res) => {
+  const userId = req.headers['user-id'];
   try {
+    const query = {
+      $and: [
+        { userId: userId },
+        { expenseType: req.params.type }
+      ]
+    };
+
     if (req.params.type !== "saida") {
-      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId accountId");
+      const receitas = await Receita.find(query).populate("userId accountId");
       res.json(receitas);
-    }
-    else {
-      const receitas = await Receita.find({ expenseType: req.params.type }).populate("userId categoryId accountId");
+    } else {
+      const receitas = await Receita.find(query).populate("userId categoryId accountId");
       res.json(receitas);
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-})
+});
 
 /**
  * @swagger
@@ -228,8 +236,9 @@ router.get("/:type", async (req, res) => {
  */
 // Obter uma receita por ID
 router.get("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const receita = await Receita.findById(req.params.id).populate(
+    const receita = await Receita.find({_id: req.params.id, userId: userId}).populate(
       "userId categoryId accountId",
     );
     if (!receita) {
@@ -242,15 +251,16 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/:categoryName", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
     const { categoryName } = req.params;
 
     // Buscar todas as receitas com o categoryId fornecido
-    const categoria = await Categoria.findOne({ name: categoryName });
+    const categoria = await Categoria.findOne({ name: categoryName, userId: userId });
     if (!categoria) {
       return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
     }
-    const receitas = await Receita.find({ categoryId: categoria._id }).populate("userId categoryId");
+    const receitas = await Receita.find({ categoryId: categoria._id, userId: userId }).populate("userId categoryId");
 
     if (!receitas || receitas.length === 0) {
       return res.status(404).json({ message: "Nenhuma receita encontrada para esta categoria." });
@@ -267,7 +277,7 @@ router.get("/:categoryName", async (req, res) => {
     });
 
     res.json({
-      categoryId,
+      categoryId: categoria._id,
       total,
       receitas
     });
@@ -319,9 +329,10 @@ router.get("/:categoryName", async (req, res) => {
  */
 // Atualizar uma receita por ID
 router.put("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const receitaAtualizada = await Receita.findByIdAndUpdate(
-      req.params.id,
+    const receitaAtualizada = await Receita.findOneAndUpdate(
+      {_id: req.params.id, userId: userId},
       req.body,
       { new: true },
     );
@@ -373,8 +384,9 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma receita por ID
 router.delete("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const receitaDeletada = await Receita.findByIdAndDelete(req.params.id);
+    const receitaDeletada = await Receita.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!receitaDeletada) {
       return res.status(404).json({ message: "Receita não encontrada" });
     }

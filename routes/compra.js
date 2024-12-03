@@ -85,7 +85,7 @@ const router = express.Router();
  */
 // Criar uma nova compra
 router.post("/", async (req, res) => {
-  
+  const userId = req.headers['userId'];
   try {
     const {
       store,
@@ -98,7 +98,7 @@ router.post("/", async (req, res) => {
     } = req.body;
 
     // 1. Buscar o Cartão pelo número
-    const cartao = await Cartao.findOne({ cardNumber: cardNumber }).session(session);
+    const cartao = await Cartao.findOne({ cardNumber: cardNumber, userId: userId });
     if (!cartao) {
       return res.status(404).json({ message: 'Cartão não encontrado com o número fornecido.' });
     }
@@ -111,13 +111,13 @@ router.post("/", async (req, res) => {
     cartao.cardLimited -= value;
     await cartao.save();
     // 2. Buscar a Categoria pelo nome
-    const categoria = await Categoria.findOne({ name: categoryName }).session(session);
+    const categoria = await Categoria.findOne({ name: categoryName, userId: userId });
     if (!categoria) {
       return res.status(404).json({ message: 'Categoria não encontrada com o nome fornecido.' });
     }
 
     // 3. Buscar a Conta Bancária pelo nome
-    const conta = await ContaBancaria.findOne({ accountBankingName: accountBankingNames }).session(session);
+    const conta = await ContaBancaria.findOne({ accountBankingName: accountBankingNames, userId: userId });
     if (!conta) {
       return res.status(404).json({ message: 'Conta bancária não encontrada.' });
     }
@@ -186,8 +186,9 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as compras
 router.get("/", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const compras = await Compra.find().populate("cardId").populate("categoryId").populate("accountId").populate("userId");
+    const compras = await Compra.find({userId: userId}).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     res.json(compras);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -229,8 +230,9 @@ router.get("/", async (req, res) => {
  */
 // Obter uma compra por ID
 router.get("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const compra = await Compra.findById(req.params.id).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
+    const compra = await Compra.find({userId: userId, _id: req.params.id}).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     if (!compra) {
       return res.status(404).json({ message: "Compra não encontrada" });
     }
@@ -281,11 +283,12 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar uma compra por ID
 router.put("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const compraAtualizada = await Compra.findByIdAndUpdate(
-      req.params.id,
+    const compraAtualizada = await Compra.findOneAndUpdate(
+      { userId: userId, _id: req.params.id },
       req.body,
-      { new: true },
+      { new: true }
     );
     if (!compraAtualizada) {
       return res.status(404).json({ message: "Compra não encontrada" });
@@ -335,10 +338,11 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma compra por ID
 router.delete("/:id", async (req, res) => {
+  const userId = req.headers['userId'];
   try {
-    const compraDeletada = await Compra.findByIdAndDelete(req.params.id);
+    const compraDeletada = await Compra.findOneAndDelete({ _id: req.params.id, userId: userId });
     if (!compraDeletada) {
-      return res.status(404).json({ message: "Compra não encontrada" });
+      return res.status(404).json({ message: "Compra não encontrada ou usuário não autorizado" });
     }
     res.json({ message: "Compra deletada com sucesso" });
   } catch (err) {
