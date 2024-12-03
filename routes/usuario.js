@@ -288,7 +288,10 @@ router.post("/registro", async (req, res) => {
     res.status(201).json({
       message: "Usuário registrado com sucesso",
       response: {
-        token: token
+        token: token,
+        id: usuario._id,
+        email: usuario.email,
+        name: usuario.name,
       },
     });
   } catch (err) {
