@@ -117,7 +117,7 @@ router.post("/", async (req, res) => {
       // Aumentar o saldo da conta bancária
       contaBancaria.accountBalance -= expenseValue;
       await contaBancaria.save();
-      const novaReceita = new Receita({ ...req.body, categoryId: categoria._id, date: new Date() });
+      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, categoryId: categoria._id, date: new Date() });
       await novaReceita.save();
       res.status(201).json(novaReceita);
     }
