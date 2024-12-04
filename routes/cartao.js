@@ -80,7 +80,7 @@ const router = express.Router();
  */
 // Criar um novo cartão
 router.post("/", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const cartaoExistente = await Cartao.findOne({ cardNumber:req.body.cardNumber, userId: userId });
     if (cartaoExistente) {
@@ -118,7 +118,7 @@ router.post("/", async (req, res) => {
  */
 // Obter todos os cartões
 router.get("/", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const cartoes = await Cartao.find({userId: userId}).populate("userId");
     res.json(cartoes);
@@ -162,7 +162,7 @@ router.get("/", async (req, res) => {
  */
 // Obter um cartão por ID
 router.get("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const cartao = await Cartao.find({_id: req.params.id, userId: userId}).populate("userId");
     if (!cartao) {
@@ -215,7 +215,7 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar um cartão por ID
 router.put("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const cartaoAtualizado = await Cartao.findOneAndUpdate(
       {_id: req.params.id, userId: userId},
@@ -270,7 +270,7 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar um cartão por ID
 router.delete("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const cartaoDeletado = await Cartao.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!cartaoDeletado) {
