@@ -69,7 +69,7 @@ const router = express.Router();
 // Criar uma nova categoria
 router.post("/", async (req, res) => {
   try {
-    const categoriaExistente = await Categoria.findOne({ categoryName: req.body.categoryName, userId: req.headers['userId'] });
+    const categoriaExistente = await Categoria.findOne({ categoryName: req.body.categoryName, userId: req.headers['userid'] });
     if (categoriaExistente) {
       return res.status(400).json({ message: "Categoria já existe para este usuário" });
     }
@@ -105,23 +105,29 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as categorias
 router.get("/", async (req, res) => {
+  console.log("Cabeçalhos recebidos:", req.headers);
+  const userId = req.headers['userid'];
+  console.log(userId)
+  if (!userId) {
+    return res.status(400).json({ error: 'userId não fornecido no cabeçalho da requisição' });
+  }
   try {
+    const categorias = await Categoria.find({ userId });
+    console.log(categorias)
+    // Pipeline de agregação no resultado do find()
     const categoriasComRevenue = await Categoria.aggregate([
       {
-        // Filtra as categorias pelo userId
-        $match: { userId: req.headers['userId'] }
+        $match: { _id: { $in: categorias.map(c => c._id) } }
       },
       {
-        // Realiza um lookup para trazer as receitas associadas a cada categoria
         $lookup: {
-          from: "receitas", // Nome da coleção de receitas no MongoDB
+          from: "receitas",
           localField: "_id",
           foreignField: "categoryId",
           as: "receitas"
         }
       },
       {
-        // Adiciona o campo revenueValue calculando a soma e subtração dos valores
         $addFields: {
           revenueValue: {
             $sum: {
@@ -141,14 +147,13 @@ router.get("/", async (req, res) => {
         }
       },
       {
-        // Opcional: Remove o array de receitas da resposta
         $project: {
           receitas: 1,
           categoryName: 1,
           categoryColor: 1,
           revenueValue: 1,
           userId: 1,
-          spendingLimit:1,
+          spendingLimit: 1,
           _id: 1
         }
       }
@@ -197,13 +202,13 @@ router.get("/", async (req, res) => {
 // Obter uma categoria por ID
 router.get("/:id", async (req, res) => {
   try {
-    const categoriaId = req.params.id; // Obtém o ID da categoria dos parâmetros da requisição
+    const categoriaId = req.params.id;
     const categoriasComRevenue = await Categoria.aggregate([
       {
         // Filtra para pegar apenas a categoria específica pelo ID
         $match: {
           _id: new mongoose.Types.ObjectId(categoriaId),
-          userId: req.headers['userId']
+          
         }
       },
       {
@@ -278,7 +283,7 @@ router.get("/:id", async (req, res) => {
           categoryBalance: 1,
           revenueValue: 1,
           userId: 1,
-          spendingLimit:1,
+          spendingLimit: 1,
           _id: 1
         }
       }
@@ -336,10 +341,10 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar uma categoria por ID
 router.put("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const categoriaAtualizada = await Categoria.findOneAndUpdate(
-      {_id: req.params.id, userId: userId},
+      { _id: req.params.id, userId: userId },
       req.body,
       { new: true },
     );
@@ -391,9 +396,9 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma categoria por ID
 router.delete("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
-    const categoriaDeletada = await Categoria.findOneAndDelete({_id: req.params.id, userId: userId});
+    const categoriaDeletada = await Categoria.findOneAndDelete({ _id: req.params.id, userId: userId });
     if (!categoriaDeletada) {
       return res.status(404).json({ message: "Categoria não encontrada" });
     }

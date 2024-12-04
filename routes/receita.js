@@ -170,7 +170,8 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as receitas
 router.get("/", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
+  console.log(userId)
   try {
     const receitas = await Receita.find({userId: userId}).populate("userId categoryId accountId");
     res.json(receitas);
@@ -180,7 +181,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:type", async (req, res) => {
-  const userId = req.headers['user-id'];
+  const userId = req.headers['userid'];
   try {
     const query = {
       $and: [
@@ -236,7 +237,7 @@ router.get("/:type", async (req, res) => {
  */
 // Obter uma receita por ID
 router.get("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const receita = await Receita.find({_id: req.params.id, userId: userId}).populate(
       "userId categoryId accountId",
@@ -251,7 +252,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/:categoryName", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const { categoryName } = req.params;
 
@@ -329,7 +330,7 @@ router.get("/:categoryName", async (req, res) => {
  */
 // Atualizar uma receita por ID
 router.put("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const receitaAtualizada = await Receita.findOneAndUpdate(
       {_id: req.params.id, userId: userId},
@@ -384,7 +385,7 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma receita por ID
 router.delete("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const receitaDeletada = await Receita.findOneAndDelete({_id: req.params.id, userId: userId});
     if (!receitaDeletada) {

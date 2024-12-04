@@ -85,7 +85,7 @@ const router = express.Router();
  */
 // Criar uma nova compra
 router.post("/", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const {
       store,
@@ -186,7 +186,7 @@ router.post("/", async (req, res) => {
  */
 // Obter todas as compras
 router.get("/", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const compras = await Compra.find({userId: userId}).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     res.json(compras);
@@ -230,7 +230,7 @@ router.get("/", async (req, res) => {
  */
 // Obter uma compra por ID
 router.get("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const compra = await Compra.find({userId: userId, _id: req.params.id}).populate("cardId").populate("categoryId").populate("accountId").populate("userId");
     if (!compra) {
@@ -283,7 +283,7 @@ router.get("/:id", async (req, res) => {
  */
 // Atualizar uma compra por ID
 router.put("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const compraAtualizada = await Compra.findOneAndUpdate(
       { userId: userId, _id: req.params.id },
@@ -338,7 +338,7 @@ router.put("/:id", async (req, res) => {
  */
 // Deletar uma compra por ID
 router.delete("/:id", async (req, res) => {
-  const userId = req.headers['userId'];
+  const userId = req.headers['userid'];
   try {
     const compraDeletada = await Compra.findOneAndDelete({ _id: req.params.id, userId: userId });
     if (!compraDeletada) {
