@@ -113,7 +113,7 @@ router.get("/", async (req, res) => {
   }
   try {
     const categorias = await Categoria.find({ userId });
-    console.log(categorias)
+    console.log(categorias);
     // Pipeline de agregação no resultado do find()
     const categoriasComRevenue = await Categoria.aggregate([
       {
@@ -137,8 +137,8 @@ router.get("/", async (req, res) => {
                 in: {
                   $cond: [
                     { $eq: ["$$receita.expenseType", "saida"] },
-                    "$$receita.expenseValue",
-                    { $multiply: ["$$receita.expenseValue", -1] }
+                    { $multiply: ["$$receita.expenseValue", -1] },
+                    "$$receita.expenseValue"
                   ]
                 }
               }

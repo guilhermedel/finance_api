@@ -106,18 +106,18 @@ router.post("/", async (req, res) => {
         expenseName,
         userId,
       } = req.body;
-      const categoria = await Categoria.findOne({ categoryName: expenseCategory });
+      const categoria = await Categoria.findOne({ categoryName: expenseCategory, userId: userId });
       if (!categoria) {
         return res.status(404).json({ error: 'Categoria não encontrada com o nome fornecido.' });
       }
-      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount });
+      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount, userId: userId });
       if (!contaBancaria) {
         return res.status(404).json({ error: 'Conta bancaria não encontrada com o nome fornecido.' });
       }
       // Aumentar o saldo da conta bancária
       contaBancaria.accountBalance -= expenseValue;
       await contaBancaria.save();
-      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, categoryId: categoria._id, date: new Date() });
+      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, categoryId: categoria._id, date: new Date(), userId: userId });
       await novaReceita.save();
       res.status(201).json(novaReceita);
     }
@@ -129,7 +129,7 @@ router.post("/", async (req, res) => {
         expenseAccount,
         userId,
       } = req.body;
-      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount });
+      const contaBancaria = await ContaBancaria.findOne({ accountBankingName: expenseAccount, userId: userId });
       if (!contaBancaria) {
         return res.status(404).json({ error: 'Conta bancaria não encontrada com o nome fornecido.' });
       }
@@ -137,7 +137,7 @@ router.post("/", async (req, res) => {
       contaBancaria.accountBalance += expenseValue;
       await contaBancaria.save();
 
-      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, date: new Date() });
+      const novaReceita = new Receita({ ...req.body, accountId: contaBancaria._id, date: new Date(), userId: userId });
       await novaReceita.save();
       res.status(201).json(novaReceita);
     }
